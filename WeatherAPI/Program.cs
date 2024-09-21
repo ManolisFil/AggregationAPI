@@ -11,7 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddHttpClient("Weather");//, x => x.BaseAddress = new Uri(builder.Configuration["WeatherUrl"]));
+builder.Services.AddHttpClient("Weather");
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

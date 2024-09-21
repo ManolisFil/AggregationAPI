@@ -1,9 +1,18 @@
+using NewsAPI.Service;
+using NewsAPI.Service.IService;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+builder.Services.AddScoped<INewsService, NewsService>();
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddHttpClient("News"); 
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
