@@ -1,6 +1,6 @@
 ﻿using NewsAPI.Models;
 
-namespace NewsAPI.Service
+namespace NewsAPI.Service.IService
 {
     public interface INewsService
     {

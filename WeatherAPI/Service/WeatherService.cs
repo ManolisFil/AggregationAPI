@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 using WeatherAPI.Models;
+using WeatherAPI.Service.IService;
 
-namespace WeatherAPI.Service.IService
+namespace WeatherAPI.Service
 {
     public class WeatherService : IWeatherService
     {
@@ -30,7 +31,7 @@ namespace WeatherAPI.Service.IService
                     Condition = json["weather"][0]["description"].ToString(),
                     Temperature = json["main"]["temp"].ToString(),
                     City = json["name"].ToString(),
-                    DataGetDate = DateTime.Now.Add(new TimeSpan((int.Parse(json["dt"].ToString()) * 1000) - (int.Parse(json["timezone"].ToString()) * 10000)))
+                    DataGetDate = DateTime.Now.Add(new TimeSpan(int.Parse(json["dt"].ToString()) * 1000 - int.Parse(json["timezone"].ToString()) * 10000))
                 };
             }
             return weatherModel;

@@ -1,3 +1,4 @@
+using WeatherAPI.Service;
 using WeatherAPI.Service.IService;
 
 var builder = WebApplication.CreateBuilder(args);
