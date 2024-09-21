@@ -8,7 +8,7 @@ namespace WeatherAPI.Controllers
     [Route("api/weather")]
     public class WeatherAPIController
     {
-       private readonly IWeatherService _weatherService;
+        private readonly IWeatherService _weatherService;
 
         private ResponseDto _responseDto;
 
@@ -19,14 +19,12 @@ namespace WeatherAPI.Controllers
             _weatherService = weatherService;
         }
 
-
         [HttpGet("GetWeather/{city}")]
         public async Task<ResponseDto> GetCart(string city)
         {
             try
             {
                 WeatherModel weatherData = new WeatherModel();
-                //if city is empty
                 if (!string.IsNullOrWhiteSpace(city))
                 {
                     weatherData = await _weatherService.FetchWeatherData(city);
@@ -41,7 +39,5 @@ namespace WeatherAPI.Controllers
 
             return _responseDto;
         }
-
-
     }
 }

@@ -16,7 +16,6 @@ namespace WeatherAPI.Service.IService
         {
             WeatherModel weatherModel = null;
             var client = _httpClientFactory.CreateClient("Weather");
-            //var response = await client.GetAsync($"https://api.openweathermap.org/data/2.5/weather?lat=37.9838&lon=23.7275&appid=5d3338979da798f3fdeff91e53b55d57");
             var response = await client.GetAsync(string.Format(client.BaseAddress.OriginalString, city));
             if (response.IsSuccessStatusCode)
             {
