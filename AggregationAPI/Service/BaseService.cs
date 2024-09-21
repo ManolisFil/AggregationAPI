@@ -12,7 +12,7 @@ namespace AggregationAPI.Service
         {
             _httpClientFactory = httpClientFactory;
         }
-        public async Task<ResponseDto?> SendAsync(RequestDto requestDto)
+        public async Task<ResponseModel?> SendAsync(RequestModel requestDto)
         {
             try
             {
@@ -31,20 +31,20 @@ namespace AggregationAPI.Service
                 switch (apiResponse.StatusCode)
                 {
                     case System.Net.HttpStatusCode.NotFound:
-                        return new ResponseDto() { IsSuccess = false, Message = "Not Found" };
+                        return new ResponseModel() { IsSuccess = false, Message = "Not Found" };
                     case System.Net.HttpStatusCode.Forbidden:
-                        return new ResponseDto() { IsSuccess = false, Message = "Access Denied" };
+                        return new ResponseModel() { IsSuccess = false, Message = "Access Denied" };
                     case System.Net.HttpStatusCode.InternalServerError:
-                        return new ResponseDto() { IsSuccess = false, Message = "Internal Server Error" };
+                        return new ResponseModel() { IsSuccess = false, Message = "Internal Server Error" };
                     default:
                         var apiContent = await apiResponse.Content.ReadAsStringAsync();
-                        var apiResponseDto = JsonConvert.DeserializeObject<ResponseDto>(apiContent);
+                        var apiResponseDto = JsonConvert.DeserializeObject<ResponseModel>(apiContent);
                         return apiResponseDto;
                 }
             }
             catch (Exception ex)
             {
-                return new ResponseDto() { IsSuccess = false, Message = ex.Message };
+                return new ResponseModel() { IsSuccess = false, Message = ex.Message };
             }
         }
 

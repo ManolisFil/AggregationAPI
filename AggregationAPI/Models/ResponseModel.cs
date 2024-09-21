@@ -1,6 +1,6 @@
 ﻿namespace AggregationAPI.Models
 {
-    public class ResponseDto
+    public class ResponseModel
     {
         public object? Result { get; set; }
         public bool IsSuccess { get; set; } = true;

@@ -4,6 +4,6 @@ namespace AggregationAPI.Service.IService
 {
     public interface IBaseService
     {
-        Task<ResponseDto?> SendAsync(RequestDto requestDto);
+        Task<ResponseModel?> SendAsync(RequestModel requestDto);
     }
 }

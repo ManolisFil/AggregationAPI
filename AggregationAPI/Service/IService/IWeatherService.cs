@@ -4,6 +4,6 @@ namespace AggregationAPI.Service.IService
 {
     public interface IWeatherService
     {
-        Task<ResponseDto?> FetchWeatherData(string city);
+        Task<ResponseModel?> FetchWeatherData(string city);
     }
 }

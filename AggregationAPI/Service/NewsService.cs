@@ -12,12 +12,11 @@ namespace AggregationAPI.Service
         {
             _baseService = baseService;
         }
-        public async Task<ResponseDto?> FetchNewsData(string city)
+        public async Task<ResponseModel?> FetchNewsData(string city)
         {
-            return await _baseService.SendAsync(new RequestDto()
-            { 
-                Data = city,
-                Url = SD.NewsAPIBase + "/api/news/GetNews"
+            return await _baseService.SendAsync(new RequestModel()
+            {  
+                Url = SD.NewsAPIBase + "/api/news/GetNews/" + city
             });
         }
     }
