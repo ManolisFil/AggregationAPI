@@ -7,16 +7,20 @@ namespace WeatherAPI.Service.IService
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public WeatherService(IHttpClientFactory httpClientFactory)
+        private readonly IConfiguration _configuration;
+
+        public WeatherService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory;
+            _configuration = configuration;
         }
 
         public async Task<WeatherModel> FetchWeatherData(string city)
         {
             WeatherModel weatherModel = null;
             var client = _httpClientFactory.CreateClient("Weather");
-            var response = await client.GetAsync(string.Format(client.BaseAddress.OriginalString, city));
+            string weatherUriStr = _configuration.GetValue<string>("WeatherUrl");
+            var response = await client.GetAsync(string.Format(weatherUriStr, city));
             if (response.IsSuccessStatusCode)
             {
                 var apiContent = await response.Content.ReadAsStringAsync();
