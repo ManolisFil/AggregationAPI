@@ -20,7 +20,7 @@ namespace WeatherAPI.Controllers
         }
 
         [HttpGet("GetWeather/{city}")]
-        public async Task<ResponseDto> GetCart(string city)
+        public async Task<ResponseDto> GetWeather(string city)
         {
             try
             {

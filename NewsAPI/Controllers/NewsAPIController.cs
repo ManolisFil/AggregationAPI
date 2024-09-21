@@ -21,7 +21,7 @@ namespace NewsAPI.Controllers
         }
 
         [HttpGet("GetNews/{city}")]
-        public async Task<ResponseDto> GetCart(string city)
+        public async Task<ResponseDto> GetNews(string city)
         {
             try
             {
