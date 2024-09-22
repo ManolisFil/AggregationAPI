@@ -25,7 +25,7 @@ namespace NewsAPI.Controllers
         {
             try
             {
-                NewsModel newsData = new NewsModel();
+                List<NewsModel> newsData = new List<NewsModel>();
                 if (!string.IsNullOrWhiteSpace(city))
                 {
                     newsData = await _newsService.FetchNewsData(city);

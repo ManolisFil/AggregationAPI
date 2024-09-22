@@ -4,6 +4,6 @@ namespace NewsAPI.Service.IService
 {
     public interface INewsService
     {
-        Task<NewsModel> FetchNewsData(string city);
+        Task<List<NewsModel>> FetchNewsData(string city);
     }
 }

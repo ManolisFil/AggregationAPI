@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using WeatherAPI.Models;
 using WeatherAPI.Service.IService;
 
@@ -25,14 +26,14 @@ namespace WeatherAPI.Service
             response.EnsureSuccessStatusCode();
             if (response.IsSuccessStatusCode)
             {
-                var apiContent = await response.Content.ReadAsStringAsync();
-                var json = JObject.Parse(apiContent);
+                using var respStream = await response.Content.ReadAsStreamAsync();
+                var responseObj = await JsonSerializer.DeserializeAsync<WeatherResponseModel>(respStream);
                 weatherModel = new()
                 {
-                    Condition = json["weather"][0]["description"].ToString(),
-                    Temperature = json["main"]["temp"].ToString(),
-                    City = json["name"].ToString(),
-                    DataGetDate = DateTime.Now.Add(new TimeSpan(int.Parse(json["dt"].ToString()) * 1000 - int.Parse(json["timezone"].ToString()) * 10000))
+                    Condition = responseObj.weather.FirstOrDefault().description,
+                    Temperature = responseObj.main.temp,
+                    City = responseObj.name,
+                    DataGetDate =  DateTime.Now.Add(new TimeSpan(responseObj.dt * 1000 - responseObj.timezone * 10000))
                 };
             }
             return weatherModel;

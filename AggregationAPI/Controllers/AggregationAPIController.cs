@@ -30,7 +30,7 @@ namespace AggregationAPI.Controllers
                 var newsTask = _newsService.FetchNewsData(city); 
                 var spotifyTask = _spotifyService.FetchNewReleases(); 
 
-                await Task.WhenAll(weatherTask, newsTask);
+                await Task.WhenAll(weatherTask, newsTask, spotifyTask);
 
                 var weatherData = weatherTask.Result;
                 var newsData = newsTask.Result;

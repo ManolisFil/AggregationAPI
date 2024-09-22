@@ -1,6 +1,6 @@
 ﻿using NewsAPI.Models;
 using NewsAPI.Service.IService;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace NewsAPI.Service
 {
@@ -16,29 +16,28 @@ namespace NewsAPI.Service
             _configuration = configuration;
         }
 
-        public async Task<NewsModel> FetchNewsData(string city)
+        public async Task<List<NewsModel>> FetchNewsData(string city)
         {
-            NewsModel newsData = null;
+            List<NewsModel> newsData = new List<NewsModel>() ;
             var client = _httpClientFactory.CreateClient("News");
             string newsUriStr = _configuration.GetValue<string>("NewsURI");
-            string newsApiKey = _configuration.GetValue<string>("NewsAPIKey");
-
+            string newsApiKey = _configuration.GetValue<string>("NewsAPIKey"); 
             client.DefaultRequestHeaders.Add("user-agent", "News-API-csharp/0.1");
             client.DefaultRequestHeaders.Add("x-api-key", newsApiKey);
 
             var response = await client.GetAsync(string.Format(newsUriStr, city));
             if (response.IsSuccessStatusCode)
             {
-                var apiContent = await response.Content.ReadAsStringAsync();
-                var json = JObject.Parse(apiContent);
-                newsData = new()
-                {
-                    Title = json["articles"][0]["title"].ToString(),
-                    Description = json["articles"][0]["description"].ToString(),
-                    Date = DateTime.Parse(json["articles"][0]["publishedAt"].ToString()), 
-                };
-            }
+                using var respStream = await response.Content.ReadAsStreamAsync();
+                var responseObj = await JsonSerializer.DeserializeAsync<GetNewsResultModel>(respStream);
 
+                return (responseObj?.articles?.Select(x => new NewsModel()
+                {
+                    Title = x.title,
+                    Description = x.description,
+                    Date = x.publishedAt
+                }).ToList() ?? new List<NewsModel>());
+            }
             return newsData;
         }
     }
