@@ -21,16 +21,16 @@ namespace SpotifyAPI.Controllers
         }
 
 
-        [HttpGet("GetToken")]
-        public async Task<ResponseDto> GetToken()
+        [HttpGet("GetNewRleases")]
+        public async Task<ResponseDto> GetNewRleases()
         {
             ResponseDto resp = new ResponseDto();
             try
             {
                 var token = await _spotifyAccountService.GetToken(_configuration.GetValue<string>("Spotify:ClientId"), _configuration.GetValue<string>("Spotify:ClientSecret"));
 
-                var newReleases = await _spotifyService.GetNewReleases("US", 20, token);
-
+                var newReleases = await _spotifyService.GetNewReleases(token);
+                resp.Result = newReleases;
             }
             catch (Exception ex) 
             {
