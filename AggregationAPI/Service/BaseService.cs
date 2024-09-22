@@ -2,6 +2,7 @@
 using AggregationAPI.Service.IService;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
+using System.Diagnostics;
 using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -21,10 +22,14 @@ namespace AggregationAPI.Service
 
         public async Task<ResponseModel> SendAsync(RequestModel requestDto)
         {
+            var stopwatch = Stopwatch.StartNew();
             try
             {
-                if(_cache.TryGetValue(requestDto.Url, out ResponseModel response))
+                if (_cache.TryGetValue(requestDto.Url, out ResponseModel response))
+                {
+                    stopwatch.Stop();
                     return response;
+                }
 
                 HttpClient client = _httpClientFactory.CreateClient("AggregationAPI");
                 HttpRequestMessage message = new HttpRequestMessage();
@@ -38,32 +43,33 @@ namespace AggregationAPI.Service
                 }
 
                 HttpResponseMessage apiResponse = await client.SendAsync(message);
-
+                stopwatch.Stop();
                 switch (apiResponse.StatusCode)
                 {
                     case System.Net.HttpStatusCode.NotFound:
-                        return new ResponseModel() { IsSuccess = false, Message = "Not Found" };
+                        return new ResponseModel() { IsSuccess = false, Message = "Not Found", Time = stopwatch.ElapsedMilliseconds };
                     case System.Net.HttpStatusCode.Forbidden:
-                        return new ResponseModel() { IsSuccess = false, Message = "Access Denied" };
+                        return new ResponseModel() { IsSuccess = false, Message = "Access Denied", Time = stopwatch.ElapsedMilliseconds };
                     case System.Net.HttpStatusCode.InternalServerError:
-                        return new ResponseModel() { IsSuccess = false, Message = "Internal Server Error" };
+                        return new ResponseModel() { IsSuccess = false, Message = "Internal Server Error", Time = stopwatch.ElapsedMilliseconds };
                     default:
                         var apiContent = await apiResponse.Content.ReadAsStringAsync();
                         var apiResponseDto = JsonConvert.DeserializeObject<ResponseModel>(apiContent);
-
+                        apiResponseDto.Time = stopwatch.ElapsedMilliseconds;
                         var cacheEntryOptions = new MemoryCacheEntryOptions
                         {
-                            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10), // Cache for 10 minutes
-                            SlidingExpiration = TimeSpan.FromMinutes(5)                 // Reset timer if accessed within 5 minutes
+                            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10), 
+                            SlidingExpiration = TimeSpan.FromMinutes(5)                
                         };
 
-                        _cache.Set(requestDto.Url, apiResponseDto, cacheEntryOptions); // Cache the dat
+                        _cache.Set(requestDto.Url, apiResponseDto, cacheEntryOptions); 
                         return apiResponseDto;
                 }
             }
             catch (Exception ex)
             {
-                return new ResponseModel() { IsSuccess = false, Message = ex.Message };
+                stopwatch.Stop();
+                return new ResponseModel() { IsSuccess = false, Message = ex.Message, Time = stopwatch.ElapsedMilliseconds };
             }
         }
     }
