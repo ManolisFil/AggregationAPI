@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NewsAPI.Models;
 using NewsAPI.Service.IService;
+using Newtonsoft.Json;
 
 namespace NewsAPI.Controllers
 {
@@ -30,7 +31,7 @@ namespace NewsAPI.Controllers
                 {
                     newsData = await _newsService.FetchNewsData(city);
                 }
-                _responseDto.Result = newsData;
+                _responseDto.Result = JsonConvert.SerializeObject(newsData);
             }
             catch (Exception ex)
             {

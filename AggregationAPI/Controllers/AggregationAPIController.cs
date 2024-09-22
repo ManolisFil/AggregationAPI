@@ -1,6 +1,7 @@
 ﻿using AggregationAPI.Models;
 using AggregationAPI.Service.IService;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace AggregationAPI.Controllers
 {
@@ -9,8 +10,8 @@ namespace AggregationAPI.Controllers
     public class AggregationAPIController : Controller
     {
         private readonly IWeatherService _weatherService;
-        private readonly INewsService  _newsService;
-        private readonly ISpotifyService  _spotifyService;
+        private readonly INewsService _newsService;
+        private readonly ISpotifyService _spotifyService;
 
         public AggregationAPIController(IWeatherService weatherService, INewsService newsService, ISpotifyService spotifyService)
         {
@@ -19,16 +20,15 @@ namespace AggregationAPI.Controllers
             _spotifyService = spotifyService;
         }
 
-
         [HttpGet("GetData/{city}")]
-        public async Task<ResponseModel> GetData(string city)
+        public async Task<AggregationModel> GetData(string city)
         {
-            ResponseModel response = new ResponseModel();
+            AggregationModel respAgrModel = new AggregationModel();
             try
             {
                 var weatherTask = _weatherService.FetchWeatherData(city);
-                var newsTask = _newsService.FetchNewsData(city); 
-                var spotifyTask = _spotifyService.FetchNewReleases(); 
+                var newsTask = _newsService.FetchNewsData(city);
+                var spotifyTask = _spotifyService.FetchNewReleases();
 
                 await Task.WhenAll(weatherTask, newsTask, spotifyTask);
 
@@ -36,19 +36,19 @@ namespace AggregationAPI.Controllers
                 var newsData = newsTask.Result;
                 var spotifyData = spotifyTask.Result;
 
+                respAgrModel.Weather = weatherData.Result != null ? JsonConvert.DeserializeObject<WeatherModel>(weatherData.Result) : null;
+                respAgrModel.News = newsData.Result != null ? JsonConvert.DeserializeObject<List<NewsModel>>(newsData.Result) : null;
+                respAgrModel.Release = spotifyData.Result != null ? JsonConvert.DeserializeObject<List<ReleaseModel>>(spotifyData.Result) : null;
 
-                // AggregationModel aggregationModel = new AggregationModel();
-                //response.Result = newsData;
-                response.Result = new List<Object>() { weatherData.Result, newsData.Result };
+                return respAgrModel;
             }
             catch (Exception ex)
             {
-                response.Message = ex.Message;
-                response.IsSuccess = false;
+                respAgrModel.Message = ex.Message;
+                respAgrModel.IsSuccess = false;
             }
 
-            return response;
+            return respAgrModel;
         }
-
     }
 }

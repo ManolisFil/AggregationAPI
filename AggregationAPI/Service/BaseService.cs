@@ -18,7 +18,8 @@ namespace AggregationAPI.Service
             _httpClientFactory = httpClientFactory;
             _cache = cache;
         }
-        public async Task<ResponseModel?> SendAsync(RequestModel requestDto)
+
+        public async Task<ResponseModel> SendAsync(RequestModel requestDto)
         {
             try
             {
@@ -30,6 +31,7 @@ namespace AggregationAPI.Service
                 message.Headers.Add("Accept", "application/json");
                 message.RequestUri = new Uri(requestDto.Url);
                 message.Method = HttpMethod.Get;
+                // in case we need a post request in the future
                 if (requestDto.Data != null)
                 {
                     message.Content = new StringContent(JsonConvert.SerializeObject(requestDto.Data), Encoding.UTF8, "application/json");
@@ -64,6 +66,5 @@ namespace AggregationAPI.Service
                 return new ResponseModel() { IsSuccess = false, Message = ex.Message };
             }
         }
-
     }
 }

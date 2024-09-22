@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using WeatherAPI.Models;
 using WeatherAPI.Service.IService;
 
@@ -29,7 +30,7 @@ namespace WeatherAPI.Controllers
                 {
                     weatherData = await _weatherService.FetchWeatherData(city);
                 }
-                _responseDto.Result = weatherData;
+                _responseDto.Result = JsonConvert.SerializeObject(weatherData);
             }
             catch (Exception ex)
             {

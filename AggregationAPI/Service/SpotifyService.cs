@@ -13,7 +13,7 @@ namespace AggregationAPI.Service
             _baseService = baseService;
         }
 
-        public async Task<ResponseModel?> FetchNewReleases()
+        public async Task<ResponseModel> FetchNewReleases()
         {
             return await _baseService.SendAsync(new RequestModel()
             {

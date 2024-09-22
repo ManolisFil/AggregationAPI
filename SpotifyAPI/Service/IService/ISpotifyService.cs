@@ -4,6 +4,6 @@ namespace SpotifyAPI.Service.IService
 {
     public interface ISpotifyService
     {
-        Task<IEnumerable<Release>> GetNewReleases(string accessToken);
+        Task<List<ReleaseModel>> GetNewReleases(string accessToken);
     }
 }

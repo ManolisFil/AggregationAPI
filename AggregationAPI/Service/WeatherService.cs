@@ -12,7 +12,7 @@ namespace AggregationAPI.Service
         {
             _baseService = baseService;
         }
-        public async Task<ResponseModel?> FetchWeatherData(string city)
+        public async Task<ResponseModel> FetchWeatherData(string city)
         {
             return await _baseService.SendAsync(new RequestModel()
             { 

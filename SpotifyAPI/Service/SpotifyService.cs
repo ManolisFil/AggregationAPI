@@ -9,31 +9,29 @@ namespace SpotifyAPI.Service
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-
         public SpotifyService(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
 
-
-        public async Task<IEnumerable<Release>> GetNewReleases(string accessToken)
+        public async Task<List<ReleaseModel>> GetNewReleases(string accessToken)
         {
             var client = _httpClientFactory.CreateClient("Spotify");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             var response = await client.GetAsync($"browse/new-releases?limit={10}");
             //var response = await client.GetAsync($"browse/new-releases"); 
-            response.EnsureSuccessStatusCode(); 
-            using  var respStream = await response.Content.ReadAsStreamAsync();
+            response.EnsureSuccessStatusCode();
+            using var respStream = await response.Content.ReadAsStreamAsync();
             var responseObj = await JsonSerializer.DeserializeAsync<GetNewReleasesResult>(respStream);
 
-            return (responseObj?.albums?.items.Select(x => new Release()
+            return (responseObj?.albums?.items.Select(x => new ReleaseModel()
             {
                 Name = x.name,
                 Date = x.release_date,
                 Link = x.external_urls.spotify,
                 Artist = string.Join(",", x.artists.Select(y => y.name))
-            }))?? new List<Release>();
+            }).ToList()) ?? new List<ReleaseModel>();
         }
     }
 }

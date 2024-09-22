@@ -1,6 +1,6 @@
 ﻿namespace SpotifyAPI.Models
 {
-    public class Release
+    public class ReleaseModel
     {
         public string Name { get; set; }
         public string Date { get; set; }

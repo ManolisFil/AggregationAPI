@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SpotifyAPI.Models;
 using SpotifyAPI.Service.IService;
+using System.Net.Http.Json;
+using System.Text.Json.Serialization;
 
 namespace SpotifyAPI.Controllers
 {
@@ -30,7 +33,7 @@ namespace SpotifyAPI.Controllers
                 var token = await _spotifyAccountService.GetToken(_configuration.GetValue<string>("Spotify:ClientId"), _configuration.GetValue<string>("Spotify:ClientSecret"));
 
                 var newReleases = await _spotifyService.GetNewReleases(token);
-                resp.Result = newReleases;
+                resp.Result = JsonConvert.SerializeObject(newReleases);
             }
             catch (Exception ex) 
             {
