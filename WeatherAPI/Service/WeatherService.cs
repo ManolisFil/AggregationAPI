@@ -22,6 +22,7 @@ namespace WeatherAPI.Service
             var client = _httpClientFactory.CreateClient("Weather");
             string weatherUriStr = _configuration.GetValue<string>("WeatherUrl");
             var response = await client.GetAsync(string.Format(weatherUriStr, city));
+            response.EnsureSuccessStatusCode();
             if (response.IsSuccessStatusCode)
             {
                 var apiContent = await response.Content.ReadAsStringAsync();
