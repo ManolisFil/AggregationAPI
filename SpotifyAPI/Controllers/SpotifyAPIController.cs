@@ -21,8 +21,8 @@ namespace SpotifyAPI.Controllers
         }
 
 
-        [HttpGet("GetNewRleases")]
-        public async Task<ResponseDto> GetNewRleases()
+        [HttpGet("GetNewReleases")]
+        public async Task<ResponseDto> GetNewReleases()
         {
             ResponseDto resp = new ResponseDto();
             try

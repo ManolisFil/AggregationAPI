@@ -17,10 +17,12 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.AddScoped<INewsService, NewsService>();
+builder.Services.AddScoped<ISpotifyService, SpotifyService>();
 builder.Services.AddScoped<IBaseService, BaseService>();
  
 SD.NewsAPIBase = builder.Configuration["ServiceUrls:NewsAPI"];
 SD.WeatherAPIBase = builder.Configuration["ServiceUrls:WeatherAPI"]; 
+SD.SpotifyAPIBase = builder.Configuration["ServiceUrls:SpotifyAPI"]; 
 
 
 

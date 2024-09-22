@@ -4,5 +4,6 @@
     {
         public static string NewsAPIBase { get; set; }
         public static string WeatherAPIBase { get; set; } 
+        public static string SpotifyAPIBase { get; set; } 
     }
 }

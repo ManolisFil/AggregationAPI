@@ -10,11 +10,13 @@ namespace AggregationAPI.Controllers
     {
         private readonly IWeatherService _weatherService;
         private readonly INewsService  _newsService;
+        private readonly ISpotifyService  _spotifyService;
 
-        public AggregationAPIController(IWeatherService weatherService, INewsService newsService)
+        public AggregationAPIController(IWeatherService weatherService, INewsService newsService, ISpotifyService spotifyService)
         {
             _weatherService = weatherService;
             _newsService = newsService;
+            _spotifyService = spotifyService;
         }
 
 
@@ -26,16 +28,18 @@ namespace AggregationAPI.Controllers
             {
                 var weatherTask = _weatherService.FetchWeatherData(city);
                 var newsTask = _newsService.FetchNewsData(city); 
+                var spotifyTask = _spotifyService.FetchNewReleases(); 
 
                 await Task.WhenAll(weatherTask, newsTask);
 
                 var weatherData = weatherTask.Result;
                 var newsData = newsTask.Result;
+                var spotifyData = spotifyTask.Result;
 
 
                 // AggregationModel aggregationModel = new AggregationModel();
                 //response.Result = newsData;
-                response.Result = new List<Object>() { weatherData, newsData };
+                response.Result = new List<Object>() { weatherData.Result, newsData.Result };
             }
             catch (Exception ex)
             {
