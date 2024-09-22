@@ -1,5 +1,7 @@
 using NewsAPI.Service;
 using NewsAPI.Service.IService;
+using Polly;
+using Polly.Contrib.WaitAndRetry;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +13,8 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<INewsService, NewsService>();
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddHttpClient("News"); 
+builder.Services.AddHttpClient("News")
+    .AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 5)));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

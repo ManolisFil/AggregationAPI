@@ -1,3 +1,5 @@
+using Polly;
+using Polly.Contrib.WaitAndRetry;
 using WeatherAPI.Service;
 using WeatherAPI.Service.IService;
 
@@ -11,7 +13,8 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddHttpClient("Weather");
+builder.Services.AddHttpClient("Weather")
+    .AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 5)));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
