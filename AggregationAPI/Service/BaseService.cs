@@ -28,6 +28,8 @@ namespace AggregationAPI.Service
                 if (_cache.TryGetValue(requestDto.Url, out ResponseModel response))
                 {
                     stopwatch.Stop();
+                    response.RequestNo++;
+                    response.Time += stopwatch.ElapsedMilliseconds;
                     return response;
                 }
 
@@ -61,7 +63,7 @@ namespace AggregationAPI.Service
                             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10), 
                             SlidingExpiration = TimeSpan.FromMinutes(5)                
                         };
-
+                        
                         _cache.Set(requestDto.Url, apiResponseDto, cacheEntryOptions); 
                         return apiResponseDto;
                 }

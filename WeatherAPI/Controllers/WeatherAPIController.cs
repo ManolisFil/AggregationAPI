@@ -29,8 +29,14 @@ namespace WeatherAPI.Controllers
                 if (!string.IsNullOrWhiteSpace(city))
                 {
                     weatherData = await _weatherService.FetchWeatherData(city);
+                    _responseDto.Result = JsonConvert.SerializeObject(weatherData);
                 }
-                _responseDto.Result = JsonConvert.SerializeObject(weatherData);
+                else
+                {
+                    _responseDto.Result = null;
+                    _responseDto.Message = "City name is missing or invalid.";
+                    _responseDto.IsSuccess = false;
+                }
             }
             catch (Exception ex)
             {

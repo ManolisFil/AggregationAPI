@@ -28,7 +28,7 @@ namespace SpotifyAPI.Service
             return (responseObj?.albums?.items.Select(x => new ReleaseModel()
             {
                 Name = x.name,
-                Date = x.release_date,
+                Date = DateTime.ParseExact(x.release_date, "yyyy-MM-dd", null),
                 Link = x.external_urls.spotify,
                 Artist = string.Join(",", x.artists.Select(y => y.name))
             }).ToList()) ?? new List<ReleaseModel>();

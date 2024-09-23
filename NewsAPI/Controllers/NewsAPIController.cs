@@ -26,19 +26,23 @@ namespace NewsAPI.Controllers
         {
             try
             {
-                List<NewsModel> newsData = new List<NewsModel>();
-                if (!string.IsNullOrWhiteSpace(city))
+                if (!string.IsNullOrEmpty(city))
                 {
-                    newsData = await _newsService.FetchNewsData(city);
+                    List<NewsModel> newsData = await _newsService.FetchNewsData(city);
+                    _responseDto.Result = JsonConvert.SerializeObject(newsData);
                 }
-                _responseDto.Result = JsonConvert.SerializeObject(newsData);
+                else
+                {
+                    _responseDto.Result = null;
+                    _responseDto.Message = "City name is missing or invalid.";
+                    _responseDto.IsSuccess = false;
+                }
             }
             catch (Exception ex)
             {
                 _responseDto.Message = ex.Message;
                 _responseDto.IsSuccess = false;
             }
-
             return _responseDto;
         }
     }

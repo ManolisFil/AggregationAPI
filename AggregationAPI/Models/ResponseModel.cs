@@ -6,6 +6,7 @@
         public bool IsSuccess { get; set; } = true;
         public string Message { get; set; } = "";
 
+        public int RequestNo { get; set; }
         public double Time { get; set; }
     }
 }
