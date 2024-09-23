@@ -1,0 +1,119 @@
+Aggregation API
+
+
+The Aggregation API is responsible for retrieving the data from 3 external web APIs .
+1)	WeatherAPI 
+2)	SpotifyAPI
+3)	NewsAPI
+
+AggregationAPI is consisted from 2 Endpoints for fetching the data to the user:
+Endpoint 1: GET /api/aggregation/GetData{city}
+Description: Aggregates data from 3external APIs.
+Parameters:   The city name we want to retrieve the data.
+Response: JSON array of aggregated data.
+Output example:
+{
+  "weather": {
+    "city": "Athens",
+    "temperature": 22.43,
+    "condition": "few clouds",
+    "dataGetDate": "2024-09-23T22:14:38.1719377+03:00"
+  },
+  "news": [
+    {
+      "title": "Severe Drought in Greece Reveals Sunken Village Near Athens",
+      "description": "The village was submerged when a reservoir was created to service the capital, but an astonishing drop in water level is revealing its lost buildings.",
+      "date": "2024-09-03T17:35:15Z"
+    }
+  ],
+  "release": [
+    {
+      "name": "Chaos",
+      "date": "2024-09-06T00:00:00",
+      "artist": "Markella",
+      "link": "https://open.spotify.com/album/16hB0SDVHnDtThxvcVGi6A"
+    }
+  ],
+  "message": "  ",
+  "isSuccess": true
+}
+
+Endpoint 2: POST /api/ aggregation/GetAggregatedDataSorted
+Description: Aggregates data from the same 3 external APIs and it sort the based on the given criteria.
+Parameters: 
+“city” : The city name we want to retrieve the related data.
+“Date”: the date based on the data will be sorted
+ “sort by” : the sort criteria (date or title/name)
+“ascending”: the order 
+Example:
+{
+  "city": "athens",
+  "date": "2024-04-23T19:08:50.291Z",
+  "sortBy": "date",
+  "ascending": true
+}
+Response: JSON array of aggregated data.
+
+Endpoint 3: GET /api/aggregation/ GatherStatistics
+Description: Aggregates performance data from 3external APIs.
+Response: JSON array of aggregated data.
+Output example:
+[
+  {
+    "apiName": "News",
+    "totalRequests": 2,
+    "time": 1227,
+    "averageResponseTime": 613,
+    "performance": "fast"
+  },
+  {
+    "apiName": "Spotify",
+    "totalRequests": 2,
+    "time": 1227,
+    "averageResponseTime": 613,
+    "performance": "fast"
+  },
+  {
+    "apiName": "Weather",
+    "totalRequests": 2,
+    "time": 639,
+    "averageResponseTime": 319,
+    "performance": "fast"
+  }
+]
+
+
+WeatherAPI
+Retrieves weather data for the given city.
+Output sample:
+  "weather": {
+    "city": "Athens",
+    "temperature": 22.43,
+    "condition": "few clouds",
+    "dataGetDate": "2024-09-23T22:14:38.1719377+03:00"
+  }
+
+SpotifyAPI
+Retrieves the 10 latest released song data from spotify.
+Output sample:
+  {
+      "name": "Chaos",
+      "date": "2024-09-06T00:00:00",
+      "artist": "Markella",
+      "link": "https://open.spotify.com/album/16hB0SDVHnDtThxvcVGi6A"
+    }
+
+NewsAPI
+Retrieves 10 articles related to the given city
+Output sample:
+    {
+      "title": "Severe Drought in Greece Reveals Sunken Village Near Athens",
+      "description": "The village was submerged when a reservoir was created to service the capital, but an astonishing drop in water level is revealing its lost buildings.",
+      "date": "2024-09-03T17:35:15Z" 
+   }
+Since what was asked was a scalable design, I implemented an intermediate layer on AggregationAPI (BaseService) to handle all the calls (GET or POST, in this assessment I used only GET calls for web API interaction) from the 3 different services (NewsService, SpotifyService and WeatherService) to the corresponding web APIs. 
+So the flow is:
+ AggregationAPIController- GetData() => 
+(NewsService, SpotifyService and WeatherService)=> each through BaseService will call the corresponding web API.
+In order to accomplish the cache  technique  I used the IMemoryCache implementation on the BaseService layer.
+All the calls performs as async Task.
