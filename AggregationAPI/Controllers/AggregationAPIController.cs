@@ -2,6 +2,7 @@
 using AggregationAPI.Service.IService;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace AggregationAPI.Controllers
 {
@@ -29,12 +30,12 @@ namespace AggregationAPI.Controllers
             try
             {
                 respAgrModel = await MakeCall(city);
-                if (respAgrModel.Weather ==null)
+                if (!respAgrModel.IsSuccess)
                 {
                     respAgrModel.News = null;
                     respAgrModel.Release = null;
                     respAgrModel.IsSuccess = false;
-                    respAgrModel.Message = "City name is invalid.";
+                    respAgrModel.Message = respAgrModel.Message;
                 }               
             }
             catch (Exception ex)
@@ -114,7 +115,8 @@ namespace AggregationAPI.Controllers
             respAgrModel.Weather = weatherData.Result != null ? JsonConvert.DeserializeObject<WeatherModel>(weatherData.Result) : null;
             respAgrModel.News = newsData.Result != null ? JsonConvert.DeserializeObject<List<NewsModel>>(newsData.Result) : null;
             respAgrModel.Release = spotifyData.Result != null ? JsonConvert.DeserializeObject<List<ReleaseModel>>(spotifyData.Result) : null;
-
+            respAgrModel.IsSuccess = weatherData.IsSuccess && newsData.IsSuccess && spotifyData.IsSuccess;
+            respAgrModel.Message =  weatherData.Message + " " + newsData.Message + " " + spotifyData.Message;
             return respAgrModel;
         }
     }
