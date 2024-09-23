@@ -2,7 +2,6 @@
 using AggregationAPI.Service.IService;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Reflection;
 
 namespace AggregationAPI.Controllers
 {
@@ -36,23 +35,7 @@ namespace AggregationAPI.Controllers
                     respAgrModel.Release = null;
                     respAgrModel.IsSuccess = false;
                     respAgrModel.Message = "City name is invalid.";
-                }
-
-                //var weatherTask = _weatherService.FetchWeatherData(city);
-                //var newsTask = _newsService.FetchNewsData(city);
-                //var spotifyTask = _spotifyService.FetchNewReleases();
-
-                //await Task.WhenAll(weatherTask, newsTask, spotifyTask);
-
-                //var weatherData = weatherTask.Result;
-                //var newsData = newsTask.Result;
-                //var spotifyData = spotifyTask.Result;
-
-                //respAgrModel.Weather = weatherData.Result != null ? JsonConvert.DeserializeObject<WeatherModel>(weatherData.Result) : null;
-                //respAgrModel.News = newsData.Result != null ? JsonConvert.DeserializeObject<List<NewsModel>>(newsData.Result) : null;
-                //respAgrModel.Release = spotifyData.Result != null ? JsonConvert.DeserializeObject<List<ReleaseModel>>(spotifyData.Result) : null;
-
-                //return respAgrModel;
+                }               
             }
             catch (Exception ex)
             {
@@ -63,7 +46,6 @@ namespace AggregationAPI.Controllers
             return respAgrModel;
         }
 
-        //[HttpGet("GetData/{city}")]
         [HttpPost("GetAggregatedDataSorted")]
         public async Task<AggregationModel> GetAggregatedDataSorted([FromBody] SortModel model)    
         {
@@ -135,41 +117,5 @@ namespace AggregationAPI.Controllers
 
             return respAgrModel;
         }
-
-
-        //[HttpGet("GetDataByDate/{city}")]
-        //public async Task<AggregationModel> GetDataByDate(string city)
-        //{
-        //    AggregationModel respAgrModel = new AggregationModel();
-        //    try
-        //    {
-        //        var weatherTask = _weatherService.FetchWeatherData(city);
-        //        var newsTask = _newsService.FetchNewsData(city);
-        //        var spotifyTask = _spotifyService.FetchNewReleases();
-
-        //        await Task.WhenAll(weatherTask, newsTask, spotifyTask);
-
-        //        var weatherData = weatherTask.Result;
-        //        var newsData = newsTask.Result;
-        //        var spotifyData = spotifyTask.Result;
-
-        //        respAgrModel.Weather = weatherData.Result != null ? JsonConvert.DeserializeObject<WeatherModel>(weatherData.Result) : null;
-        //        respAgrModel.News = newsData.Result != null ? (JsonConvert.DeserializeObject<List<NewsModel>>(newsData.Result) : null;
-        //        respAgrModel.Release = spotifyData.Result != null ? JsonConvert.DeserializeObject<List<ReleaseModel>>(spotifyData.Result) : null;
-
-        //        return respAgrModel;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        respAgrModel.Message = ex.Message;
-        //        respAgrModel.IsSuccess = false;
-        //    }
-
-        //    return respAgrModel;
-        //}
-
-
-
-
     }
 }
