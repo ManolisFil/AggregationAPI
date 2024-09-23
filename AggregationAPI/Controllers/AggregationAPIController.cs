@@ -1,7 +1,9 @@
 ﻿using AggregationAPI.Models;
 using AggregationAPI.Service.IService;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
+using System.Diagnostics;
 using System.Text;
 
 namespace AggregationAPI.Controllers
@@ -14,11 +16,14 @@ namespace AggregationAPI.Controllers
         private readonly INewsService _newsService;
         private readonly ISpotifyService _spotifyService;
 
-        public AggregationAPIController(IWeatherService weatherService, INewsService newsService, ISpotifyService spotifyService)
+        private readonly IMemoryCache _cache;
+
+        public AggregationAPIController(IWeatherService weatherService, INewsService newsService, ISpotifyService spotifyService, IMemoryCache cache)
         {
             _weatherService = weatherService;
             _newsService = newsService;
             _spotifyService = spotifyService;
+            _cache = cache;
         }
 
         [HttpGet("GetData/{city}")]
@@ -99,6 +104,37 @@ namespace AggregationAPI.Controllers
             return respAgrModel;
         }
 
+
+        [HttpGet("GatherStatistics")]
+        public async Task<List<StatisticsModel>> GatherStatistics()
+        {
+            List<StatisticsModel> statList = new List<StatisticsModel>();
+            statList.Add(await FetchStats("News"));
+            statList.Add(await FetchStats("Spotify"));
+            statList.Add(await FetchStats("Weather"));
+            return statList;
+        }
+
+        private async Task<StatisticsModel> FetchStats(string apiName)
+        {
+            if (_cache.TryGetValue(apiName, out StatisticsModel stats))
+            {
+                stats.AverageResponseTime = stats.TotalRequests == 0 ? 0 : stats.Time / stats.TotalRequests;
+                stats.Performance = stats.AverageResponseTime < 1000 ? "fast" :
+                                    stats.AverageResponseTime < 2000 ? "average" : "slow";
+            }
+            else
+            {
+                stats = new StatisticsModel()
+                {
+                    ApiName = apiName
+                };
+            }
+
+            return stats;
+        }
+         
+
         private async Task<AggregationModel> MakeCall(string city)
         {
             AggregationModel respAgrModel = new AggregationModel();
@@ -116,8 +152,37 @@ namespace AggregationAPI.Controllers
             respAgrModel.News = newsData.Result != null ? JsonConvert.DeserializeObject<List<NewsModel>>(newsData.Result) : null;
             respAgrModel.Release = spotifyData.Result != null ? JsonConvert.DeserializeObject<List<ReleaseModel>>(spotifyData.Result) : null;
             respAgrModel.IsSuccess = weatherData.IsSuccess && newsData.IsSuccess && spotifyData.IsSuccess;
-            respAgrModel.Message =  weatherData.Message + " " + newsData.Message + " " + spotifyData.Message;
+            respAgrModel.Message = weatherData.Message + " " + newsData.Message + " " + spotifyData.Message;
+
+            await CalcMetrics("News", newsData.Time);
+            await CalcMetrics("Spotify", newsData.Time);
+            await CalcMetrics("Weather", weatherData.Time);
+
             return respAgrModel;
+        }
+
+        private async Task CalcMetrics(string apiName, long time)
+        {
+            if (_cache.TryGetValue(apiName, out StatisticsModel stats))
+            {
+                stats.TotalRequests++;
+                stats.Time += time;
+            }
+            else
+            {
+                var cacheEntryOptions = new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10),
+                    SlidingExpiration = TimeSpan.FromMinutes(5)
+                };
+                stats = new StatisticsModel()
+                {
+                    TotalRequests = 1,
+                    ApiName = apiName,
+                    Time = time
+                };
+                _cache.Set(apiName, stats, cacheEntryOptions);
+            }
         }
     }
 }

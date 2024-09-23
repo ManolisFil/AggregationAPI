@@ -7,6 +7,6 @@
         public string Message { get; set; } = "";
 
         public int RequestNo { get; set; }
-        public double Time { get; set; }
+        public long Time { get; set; }
     }
 }
